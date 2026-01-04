@@ -7,23 +7,56 @@ interface SectionProps {
   title: string;
   children: React.ReactNode;
   bg?: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
 }
 
 const Section: React.FC<SectionProps> = ({ id, title, children, bg = "bg-white", subtitle }) => (
-  <section id={id} className={`py-24 ${bg}`}>
-    <div className="container mx-auto px-4 md:px-8 max-w-6xl">
-      <div className="mb-16">
-        <h2 className="text-4xl font-extrabold text-slate-900 flex items-center tracking-tight">
-          <span className="w-12 h-1.5 bg-blue-600 mr-4 inline-block rounded-full"></span>
+  <section id={id} className={`py-28 ${bg}`}>
+    <div className="container mx-auto px-6 md:px-12 max-w-7xl">
+      <div className="mb-20 text-center md:text-left">
+        <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter flex items-center justify-center md:justify-start">
+          <span className="w-16 h-2 bg-blue-600 mr-6 inline-block rounded-full"></span>
           {title}
         </h2>
-        {subtitle && <p className="mt-4 text-slate-500 max-w-2xl text-lg font-medium">{subtitle}</p>}
+        {subtitle && <div className="mt-8 text-slate-500 max-w-3xl text-xl font-medium leading-relaxed">{subtitle}</div>}
       </div>
       {children}
     </div>
   </section>
 );
+
+const ImageWithFallback = ({ src, alt, className }: { src: string; alt: string; className: string }) => {
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <div className={`${className} bg-slate-100 relative flex items-center justify-center overflow-hidden`}>
+      {loading && !error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
+          <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+        </div>
+      )}
+      {error ? (
+        <div className="flex flex-col items-center justify-center text-slate-400 p-8 text-center">
+          <i className="fa-solid fa-user-tie text-8xl mb-4"></i>
+          <p className="text-xs font-black uppercase tracking-widest">Image Link Invalid</p>
+          <p className="text-[10px] mt-1 opacity-60 px-4">Ensure your profileImage variable is a direct image URL (ending in .jpg, .png, etc.)</p>
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          className={`w-full h-full object-cover transition-opacity duration-700 ${loading ? 'opacity-0' : 'opacity-100'}`}
+          onLoad={() => setLoading(false)}
+          onError={() => {
+            setError(true);
+            setLoading(false);
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 const App = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,33 +69,39 @@ const App = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const profileImage = "https://images.unsplash.com/photo-1519085185758-2ad9f1736580?q=80&w=1000&auto=format&fit=crop"; 
+  /**
+   * PHOTO UPDATE INSTRUCTIONS:
+   * Replace the URL below with your actual direct image link.
+   * Note: Links from Google Drive or Wix require specific "Direct Link" formats.
+   * If the image doesn't show up, the current code will show a professional fallback icon.
+   */
+  const profileImage = "https://res.cloudinary.com/doy6jwq1k/image/upload/v1767548995/Devang_tbb8uo.jpg"; 
 
   const stats = [
-    { label: "Revenue Generated", value: "$12M+" },
-    { label: "First Year Revenue", value: "$8M" },
+    { label: "Global Revenue", value: "$12M+" },
+    { label: "1st Year Impact", value: "$8M" },
     { label: "Annual Savings", value: "$5M" },
-    { label: "Escalation Reduction", value: "85%" }
+    { label: "Escalation Delta", value: "-85%" }
   ];
 
   const tools = {
-    "Product & Program": ["Jira", "Confluence", "Monday", "Miro", "Tableau", "Google Studio", "AHA"],
-    "Languages & Infra": ["Python", "Java", "SQL", "REST APIs", "Microservices", "AWS", "GCP", "Azure"],
-    "AI Toolkit": ["ChatGPT", "Claude", "Gemini", "n8n", "Bubble.io"],
-    "Practices": ["Agile", "OKRs", "Privacy-by-Design", "Data-Driven Roadmaps"]
+    "Product Management": ["Jira", "Confluence", "Monday", "Miro", "Tableau", "Google Studio", "AHA"],
+    "Technical Stack": ["Python", "Java", "SQL", "REST APIs", "Microservices", "AWS", "GCP", "Azure"],
+    "AI & Automation": ["ChatGPT", "Claude", "Gemini", "n8n", "Bubble.io"],
+    "Leadership": ["Agile", "OKRs", "Privacy-by-Design", "Data-Driven Roadmaps"]
   };
 
   const experience = [
     {
       company: "TELUS",
-      location: "Toronto",
+      location: "Toronto, Canada",
       role: "Sr. Technical Product Manager",
       period: "Mar 2019 – Present",
       products: "Subscription Platform, Loyalty Platform, Supply Ops Re-Engineering",
       highlights: [
-        "Led three product teams to deliver digital platforms across subscription and loyalty, accelerating time-to-market by 30%.",
-        "Spearheaded a subscription platform generating $8M in year one and $5M in annual savings.",
-        "Established roadmap to onboard 30+ products by 2027 while driving strategic alignment.",
+        "Led three product teams delivering digital platforms, accelerating time-to-market by 30%.",
+        "Launched a subscription platform that generated $8M in its first year with $5M in annual savings.",
+        "Established a strategic roadmap to onboard 30+ products by 2027.",
         "Integrated AI-driven analytics, boosting customer engagement by 8% MoM.",
         "Implemented proactive escalation management, reducing customer escalations by 85%.",
         "Developed 35+ KPI dashboards for 10+ teams, improving operational visibility by 50%."
@@ -73,12 +112,12 @@ const App = () => {
       location: "Asia, US, Europe",
       role: "Product Owner / Technical Lead",
       period: "Jan 2012 – May 2018",
-      products: "SCMProfit (SaaS Logistics), Mozido (Payments), Cybersecurity",
+      products: "SCMProfit (Logistics), Mozido (Payments), Cybersecurity",
       highlights: [
-        "Launched SCMProfit, a digital supply chain suite adopted in 15+ countries, generating $12M+ in revenue.",
-        "Delivered a payments platform with a 94% transaction success rate and failure rate below 4%.",
+        "Launched SCMProfit across 15+ countries, generating over $12M in revenue for global shipping clients.",
+        "Delivered a payments platform with a 94% transaction success rate and <4% failure rate.",
         "Managed development of a cybersecurity platform, reducing incident rates by 30% via advanced threat detection.",
-        "Guided three Agile teams to ensure 100% on-time releases of mission-critical B2B SaaS platforms."
+        "Ensured 100% on-time releases of mission-critical enterprise SaaS products globally."
       ]
     }
   ];
@@ -87,26 +126,23 @@ const App = () => {
     {
       name: "Warranted",
       url: "https://docs.google.com/document/d/1OYZ4d8igBlJB_qNd1ETLaXbzkPCJXcCQKo3ZcQdcgZY/edit?tab=t.0#heading=h.hste2nz6njr",
-      category: "Product Innovation",
-      desc: "A comprehensive solution concept for revolutionizing product warranty management and lifecycle tracking.",
-      icon: "fa-shield-halved",
-      hasPrototype: true
+      category: "Innovation",
+      desc: "Revolutionizing product warranty management and lifecycle tracking through technical automation.",
+      icon: "fa-shield-halved"
     },
     {
       name: "My Personal Blackbox",
       url: "https://docs.google.com/document/d/1vt5eh3B_j4QdkCegnmytbGVGHKwTAigBg52DiHRNa0o/edit?tab=t.0#heading=h.la3chc29h8nr",
-      category: "Data Privacy",
-      desc: "A strategic design for a high-security personal data vault and digital legacy recovery system.",
-      icon: "fa-vault",
-      hasPrototype: true
+      category: "Security",
+      desc: "High-security personal data vault design focused on secure digital legacy and recovery protocols.",
+      icon: "fa-vault"
     },
     {
       name: "My Review Buddy",
       url: "https://docs.google.com/document/d/1R6VbJke_O26x2DftQaK1SYq9v384yOF3Q7xH-xbjLBU/edit?tab=t.0",
       category: "AI Productivity",
-      desc: "An AI-powered feedback synthesis engine designed to help product leaders manage multi-channel reviews.",
-      icon: "fa-comments",
-      hasPrototype: true
+      desc: "AI-driven synthesis for professional reviews, helping leaders manage feedback at scale.",
+      icon: "fa-comments"
     }
   ];
 
@@ -114,119 +150,130 @@ const App = () => {
     {
       name: "Little Wizards",
       url: "https://littlewizardsclass.vercel.app/",
-      type: "EdTech Platform",
-      desc: "Interactive learning environment for kids, focusing on gamification and early education development."
+      type: "EdTech",
+      desc: "Interactive, gamified learning environment designed to empower the next generation of learners."
     },
     {
       name: "Kri-Sun Solutions",
       url: "https://kri-sun.vercel.app/",
-      type: "B2B Solutions",
-      desc: "Strategic digital presence for modern business consulting and technology framework integration."
+      type: "B2B Strategy",
+      desc: "Strategic digital presence focused on business consulting and modern technology integration."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 overflow-x-hidden selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-white selection:bg-blue-600 selection:text-white">
       {/* Navigation */}
-      <nav className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-white/80 backdrop-blur-xl shadow-sm border-b border-slate-100 py-4' : 'bg-transparent py-8'}`}>
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          <div className="text-2xl font-black tracking-tighter text-slate-900 group cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
-            <span className="text-blue-600 group-hover:text-blue-700 transition-colors">DEVANG</span> BHUTA
+      <nav className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-white/90 backdrop-blur-xl shadow-sm border-b border-slate-100 py-4' : 'bg-transparent py-10'}`}>
+        <div className="container mx-auto px-6 max-w-7xl flex justify-between items-center">
+          <div className="text-3xl font-black tracking-tighter text-slate-900 cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
+            <span className="text-blue-600">DEVANG</span> BHUTA
           </div>
-          <div className="hidden md:flex space-x-8 font-bold text-slate-500 text-xs tracking-[0.15em] uppercase">
-            <a href="#about" className="nav-link">About</a>
-            <a href="#skills" className="nav-link">Toolkit</a>
-            <a href="#experience" className="nav-link">Experience</a>
-            <a href="#projects" className="nav-link text-blue-600">Projects</a>
-            <a href="#ventures" className="nav-link">Ventures</a>
+          <div className="hidden lg:flex space-x-12 font-bold text-slate-500 text-[11px] tracking-[0.25em] uppercase">
+            <a href="#about" className="nav-link hover:text-slate-900">About</a>
+            <a href="#skills" className="nav-link hover:text-slate-900">Toolkit</a>
+            <a href="#experience" className="nav-link hover:text-slate-900">Experience</a>
+            <a href="#projects" className="nav-link text-blue-600 hover:text-blue-700">Projects</a>
+            <a href="#ventures" className="nav-link hover:text-slate-900">Ventures</a>
           </div>
-          <a href="mailto:devbhuta@gmail.com" className="bg-slate-900 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-200 hover:shadow-blue-200">
-            Contact
+          <a href="mailto:devbhuta@gmail.com" className="bg-slate-900 hover:bg-blue-600 text-white px-10 py-4 rounded-full text-xs font-black uppercase tracking-widest transition-all btn-shadow">
+            Connect
           </a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <header id="about" className="pt-40 pb-20 md:pt-56 md:pb-32 bg-white relative">
-        <div className="absolute inset-0 hero-pattern opacity-10"></div>
-        <div className="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row items-center gap-16 relative z-10">
-          <div className="flex-1 space-y-10">
-            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-5 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] border border-blue-100">
+      <header id="about" className="pt-48 pb-24 md:pt-64 md:pb-32 relative overflow-hidden bg-white">
+        <div className="absolute inset-0 hero-pattern opacity-[0.4]"></div>
+        <div className="container mx-auto px-6 max-w-7xl flex flex-col lg:flex-row items-center gap-24 relative z-10">
+          <div className="flex-1 space-y-12">
+            <div className="inline-flex items-center gap-4 bg-blue-50 text-blue-700 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-blue-100">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
               Certified Product Leader
             </div>
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tighter">
-                I Build <span className="gradient-text">Sustainable</span> <br/>High-Impact Products
+            <div className="space-y-8 text-center lg:text-left">
+              <h1 className="text-6xl md:text-8xl font-black text-slate-900 leading-[0.9] tracking-tighter">
+                Hello, I'm <br/><span className="gradient-text">Devang Bhuta</span>
               </h1>
-              <p className="text-xl text-slate-600 leading-relaxed font-semibold max-w-2xl">
-                Technical Product Manager with 14+ years of experience delivering SaaS and AI solutions globally.
+              <p className="text-2xl text-slate-500 leading-relaxed font-semibold max-w-3xl mx-auto lg:mx-0">
+                A Technical Product Manager with 14+ years of experience delivering SaaS and AI solutions globally.
               </p>
             </div>
             
-            <div className="prose prose-lg prose-slate max-w-2xl text-slate-600 leading-relaxed space-y-6">
-              <p className="font-medium">
-                I bring a unique blend of strategic vision, technical depth, and global experience. From generating <strong>$12M+ in revenue</strong> for global logistics suites to reducing customer support escalations by <strong>85%</strong> at TELUS, I thrive on solving complex business challenges with elegant technical execution.
-              </p>
-              <p className="font-medium">
-                Outside of product maps, I’m an avid <strong>Lord of the Rings</strong> aficionado, a lifelong geek, and a passionate tennis fan inspired by Roger Federer. I often blend my creative side with my technical depth—imagine cartoon sketching Frodo wielding a tennis racket!
-              </p>
+            <div className="grid md:grid-cols-2 gap-12 pt-8 border-t border-slate-100">
+              <div className="space-y-6">
+                <h3 className="font-black text-slate-900 text-[10px] uppercase tracking-[0.4em] border-b pb-3">Professional Impact</h3>
+                <p className="text-slate-600 text-lg leading-relaxed font-medium">
+                  Leading product at <strong>TELUS</strong> and formerly <strong>Aurionpro</strong>, I've generated over <strong>$12M in revenue</strong> and specialized in high-uptime payment & supply chain platforms.
+                </p>
+              </div>
+              <div className="space-y-6">
+                <h3 className="font-black text-slate-900 text-[10px] uppercase tracking-[0.4em] border-b pb-3">Creative Geek</h3>
+                <p className="text-slate-600 text-lg leading-relaxed font-medium">
+                  Avid <strong>Lord of the Rings</strong> aficionado and <strong>Roger Federer</strong> enthusiast. I blend strategic logic with creative sketching passion.
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-10 pt-8 border-t border-slate-100">
-              <div className="flex items-center text-slate-900 font-black text-xs uppercase tracking-widest group">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
-                  <i className="fa-solid fa-location-dot text-blue-600 text-lg"></i>
+            <div className="flex flex-wrap gap-12 pt-12">
+              <div className="flex items-center text-slate-900 font-black text-[10px] uppercase tracking-[0.3em] group cursor-default">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center mr-6 group-hover:bg-blue-50 transition-colors">
+                  <i className="fa-solid fa-location-dot text-blue-600 text-2xl"></i>
                 </div>
-                Toronto, Canada
+                Toronto, ON
               </div>
-              <div className="flex items-center text-slate-900 font-black text-xs uppercase tracking-widest group">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
-                  <i className="fa-brands fa-linkedin text-blue-600 text-xl"></i>
+              <div className="flex items-center text-slate-900 font-black text-[10px] uppercase tracking-[0.3em] group">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center mr-6 group-hover:bg-blue-50 transition-colors">
+                  <i className="fa-brands fa-linkedin text-blue-600 text-3xl"></i>
                 </div>
-                <a href="https://linkedin.com" target="_blank" className="hover:text-blue-700 underline underline-offset-8 decoration-2">Connect</a>
+                <a href="https://linkedin.com" target="_blank" className="hover:text-blue-700 underline underline-offset-8 decoration-4">Linkedin</a>
               </div>
             </div>
           </div>
+          
           <div className="flex-shrink-0 relative">
-            <div className="w-72 h-72 md:w-96 md:h-96 rounded-[3rem] overflow-hidden shadow-2xl relative z-10 border-8 border-white group">
-              <img src={profileImage} alt="Devang Bhuta" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
-            </div>
-            <div className="absolute -bottom-10 -right-10 w-full h-full bg-blue-600/5 rounded-[3rem] -z-0"></div>
-            <div className="absolute -top-12 -left-12 w-32 h-32 bg-blue-600 rounded-3xl flex items-center justify-center text-white text-5xl shadow-2xl shadow-blue-200 z-20 transform -rotate-12 hover:rotate-0 transition-all duration-500 cursor-pointer">
-              <i className="fa-solid fa-bolt"></i>
+            <div className="relative group">
+              <ImageWithFallback 
+                src={profileImage} 
+                alt="Devang Bhuta" 
+                className="w-80 h-80 md:w-[480px] md:h-[480px] rounded-[5rem] shadow-2xl relative z-10 border-[16px] border-white group-hover:scale-[1.02] transition-transform duration-1000"
+              />
+              <div className="absolute -bottom-16 -right-16 w-full h-full bg-blue-600/5 rounded-[5rem] -z-0 border-2 border-blue-50"></div>
+              <div className="absolute -top-16 -left-16 w-44 h-44 bg-blue-600 rounded-[3rem] flex items-center justify-center text-white text-7xl shadow-2xl shadow-blue-200 z-20 transform -rotate-6 hover:rotate-0 transition-all duration-700 cursor-help">
+                <i className="fa-solid fa-crown"></i>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Stats Bar */}
-      <section className="bg-slate-900 py-24 text-white relative overflow-hidden">
-        <div className="container mx-auto px-6 max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-12 relative z-10">
+      {/* Metrics Bar */}
+      <section className="bg-slate-900 py-32 text-white relative overflow-hidden">
+        <div className="container mx-auto px-6 max-w-7xl grid grid-cols-2 lg:grid-cols-4 gap-16 relative z-10">
           {stats.map((stat, i) => (
             <div key={i} className="text-center group">
-              <div className="text-6xl font-black mb-4 text-white group-hover:text-blue-400 transition-colors duration-500">{stat.value}</div>
-              <div className="text-slate-500 text-[10px] uppercase tracking-[0.4em] font-black">{stat.label}</div>
+              <div className="text-7xl font-black mb-6 text-white group-hover:text-blue-400 transition-colors duration-500">{stat.value}</div>
+              <div className="text-slate-500 text-[10px] uppercase tracking-[0.5em] font-black leading-relaxed max-w-[200px] mx-auto">{stat.label}</div>
             </div>
           ))}
         </div>
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-600/10 blur-[120px] rounded-full"></div>
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-600/5 blur-[180px] rounded-full"></div>
       </section>
 
-      {/* Toolkit Section */}
-      <Section id="skills" title="Technical Toolkit" bg="bg-slate-50" subtitle="Orchestrating complex architectures and product lifecycles with industry-leading stacks.">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Toolkit */}
+      <Section id="skills" title="Technical Toolkit" bg="bg-slate-50" subtitle="Expertise across product strategy, engineering logic, and AI-first workflows.">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {Object.entries(tools).map(([category, items], idx) => (
-            <div key={idx} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm card-hover flex flex-col">
-              <div className="mb-8">
-                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
-                  <i className={`fa-solid ${idx === 0 ? 'fa-layer-group' : idx === 1 ? 'fa-code' : idx === 2 ? 'fa-microchip' : 'fa-gear'}`}></i>
+            <div key={idx} className="bg-white p-14 rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-4xl transition-all duration-700 group flex flex-col">
+              <div className="mb-12">
+                <div className="w-20 h-20 bg-blue-50 rounded-[1.5rem] flex items-center justify-center text-blue-600 mb-10 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
+                  <i className={`fa-solid ${idx === 0 ? 'fa-diagram-project' : idx === 1 ? 'fa-code-branch' : idx === 2 ? 'fa-robot' : 'fa-handshake'}`}></i>
                 </div>
-                <h4 className="text-xl font-black text-slate-900 tracking-tight">{category}</h4>
+                <h4 className="text-2xl font-black text-slate-900 tracking-tighter">{category}</h4>
               </div>
-              <div className="flex flex-wrap gap-2 mt-auto">
+              <div className="flex flex-wrap gap-3 mt-auto">
                 {items.map((item, i) => (
-                  <span key={i} className="bg-slate-50 text-slate-700 px-4 py-2 rounded-xl text-[10px] font-black border border-slate-100 uppercase tracking-widest">
+                  <span key={i} className="bg-slate-50 text-slate-800 px-5 py-2.5 rounded-2xl text-[10px] font-black border border-slate-100 uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-colors cursor-default">
                     {item}
                   </span>
                 ))}
@@ -236,42 +283,40 @@ const App = () => {
         </div>
       </Section>
 
-      {/* Professional Experience Section */}
-      <Section id="experience" title="Professional Experience">
-        <div className="space-y-16">
+      {/* Experience Section */}
+      <Section id="experience" title="Experience">
+        <div className="space-y-24">
           {experience.map((exp, idx) => (
             <div key={idx} className="group relative">
-              <div className="absolute -left-6 top-0 bottom-0 w-1.5 bg-slate-100 group-hover:bg-blue-600 transition-all duration-700 rounded-full"></div>
-              <div className="pl-10">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-10 gap-6">
-                  <div>
-                    <h3 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter">{exp.role}</h3>
-                    <div className="flex items-center text-blue-600 font-black mt-3 text-lg">
-                      <span className="tracking-widest uppercase text-sm">{exp.company}</span>
-                      <span className="mx-4 text-slate-200">/</span>
-                      <span className="text-slate-400 font-bold uppercase text-sm">{exp.location}</span>
+              <div className="absolute -left-12 top-0 bottom-0 w-2 bg-slate-50 group-hover:bg-blue-600 transition-all duration-700 rounded-full"></div>
+              <div className="pl-6">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-16 gap-10">
+                  <div className="space-y-4">
+                    <h3 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter">{exp.role}</h3>
+                    <div className="flex items-center text-blue-600 font-black text-sm uppercase tracking-[0.3em]">
+                      {exp.company} <span className="mx-6 text-slate-200">/</span> {exp.location}
                     </div>
                   </div>
-                  <div className="inline-block bg-slate-900 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-slate-200">
+                  <div className="bg-slate-900 text-white px-10 py-5 rounded-3xl font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl shadow-slate-200 group-hover:scale-105 transition-transform">
                     {exp.period}
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-                  <div className="lg:col-span-1">
-                    <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
-                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 block mb-4">Domain Focus</span>
-                      <p className="text-slate-800 font-bold leading-relaxed">{exp.products}</p>
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-20">
+                  <div className="lg:col-span-2">
+                    <div className="bg-slate-50 p-12 rounded-[4rem] border border-slate-100 h-full flex flex-col justify-center">
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 block mb-8">Ecosystem focus</span>
+                      <p className="text-slate-900 font-bold text-2xl leading-tight tracking-tight italic">"{exp.products}"</p>
                     </div>
                   </div>
                   <div className="lg:col-span-3">
-                    <ul className="space-y-5">
+                    <ul className="space-y-8">
                       {exp.highlights.map((h, i) => (
                         <li key={i} className="flex items-start group/li">
-                          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center mr-6 mt-1 flex-shrink-0 group-hover/li:bg-blue-600 group-hover/li:text-white transition-colors">
-                            <i className="fa-solid fa-check text-xs"></i>
+                          <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center mr-10 mt-1 flex-shrink-0 group-hover/li:bg-blue-600 group-hover/li:text-white transition-all">
+                            <i className="fa-solid fa-check text-sm"></i>
                           </div>
-                          <span className="text-slate-600 font-medium text-lg leading-relaxed">{h}</span>
+                          <span className="text-slate-600 font-medium text-xl leading-relaxed">{h}</span>
                         </li>
                       ))}
                     </ul>
@@ -283,72 +328,54 @@ const App = () => {
         </div>
       </Section>
 
-      {/* Personal Projects Section */}
-      <Section id="projects" title="Personal Projects" bg="bg-slate-900" subtitle={<span className="text-slate-400">Deep dives into AI strategy, data security, and specialized product frameworks.</span>}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+      {/* Projects Section */}
+      <Section id="projects" title="Personal Projects" bg="bg-slate-950" subtitle={<span className="text-slate-400">Strategic concepts and high-fidelity frameworks designed to optimize complex product ecosystems.</span>}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {personalProjects.map((proj, idx) => (
-            <div 
+            <a 
               key={idx} 
-              className="bg-white/5 backdrop-blur-md p-10 rounded-[3rem] border border-white/10 flex flex-col hover:bg-white hover:shadow-3xl hover:-translate-y-4 transition-all duration-700 group cursor-default"
+              href={proj.url} 
+              target="_blank" 
+              className="bg-white/5 backdrop-blur-xl p-14 rounded-[5rem] border border-white/10 flex flex-col hover:bg-white hover:shadow-4xl transition-all duration-700 group card-hover-effect"
             >
-              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl mb-10 shadow-2xl shadow-blue-900 group-hover:shadow-blue-200 group-hover:rotate-6 transition-all duration-700">
+              <div className="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white text-5xl mb-14 shadow-4xl shadow-blue-900/40 group-hover:rotate-6 transition-all duration-500">
                 <i className={`fa-solid ${proj.icon}`}></i>
               </div>
-              <h3 className="text-2xl font-black text-white group-hover:text-slate-900 mb-4 tracking-tight">{proj.name}</h3>
-              <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] mb-6 block">{proj.category}</span>
-              <p className="text-slate-400 group-hover:text-slate-600 font-medium leading-relaxed mb-10 flex-grow">{proj.desc}</p>
+              <h3 className="text-3xl font-black text-white group-hover:text-slate-900 mb-6 tracking-tighter">{proj.name}</h3>
+              <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-10 block">{proj.category}</span>
+              <p className="text-slate-400 group-hover:text-slate-600 font-medium text-xl leading-relaxed mb-14 flex-grow">{proj.desc}</p>
               
-              <div className="space-y-4 pt-8 border-t border-white/10 group-hover:border-slate-100">
-                <a 
-                  href={proj.url} 
-                  target="_blank" 
-                  className="w-full flex items-center justify-between bg-white/10 text-white group-hover:bg-slate-900 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all hover:scale-105"
-                >
-                  View Document <i className="fa-solid fa-arrow-right-long"></i>
-                </a>
-                {proj.hasPrototype && (
-                  <button 
-                    className="w-full flex items-center justify-between bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all hover:bg-blue-700 hover:scale-105"
-                  >
-                    Working Prototype <i className="fa-solid fa-flask"></i>
-                  </button>
-                )}
+              <div className="pt-12 border-t border-white/10 group-hover:border-slate-100 flex items-center justify-between text-white group-hover:text-slate-900 font-black text-[11px] uppercase tracking-widest">
+                Explore Strategy <i className="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-4"></i>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </Section>
 
       {/* Featured Ventures */}
-      <Section id="ventures" title="Featured Ventures" subtitle="Live deployments and business solutions built for impact and scalability.">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <Section id="ventures" title="Featured Ventures" subtitle="Platforms delivering measurable business value and educational delight.">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
           {featuredVentures.map((proj, idx) => (
-            <div key={idx} className="group relative bg-white rounded-[3rem] overflow-hidden shadow-sm border border-slate-100 hover:shadow-2xl transition-all duration-1000 flex flex-col h-full">
-              <div className="h-56 bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500 to-transparent"></div>
-                <div className="text-6xl text-white/10 font-black absolute -bottom-4 -left-4 tracking-tighter uppercase select-none group-hover:text-blue-500/10 transition-colors">
-                  {proj.name}
-                </div>
-                <i className={`fa-solid ${idx === 0 ? 'fa-wand-sparkles' : 'fa-lightbulb'} text-7xl text-blue-600/20 group-hover:scale-110 transition-transform duration-1000`}></i>
+            <div key={idx} className="group relative bg-white rounded-[5rem] overflow-hidden shadow-sm border border-slate-100 hover:shadow-4xl transition-all duration-1000 flex flex-col h-full card-hover-effect">
+              <div className="h-80 bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-600 to-transparent"></div>
+                <h3 className="text-[12rem] text-white/5 font-black absolute bottom-0 left-0 tracking-tighter uppercase select-none group-hover:text-blue-500/10 transition-colors pointer-events-none">
+                  {proj.name.substring(0, 1)}
+                </h3>
+                <i className={`fa-solid ${idx === 0 ? 'fa-wand-magic-sparkles' : 'fa-rocket'} text-9xl text-blue-600/10 group-hover:scale-125 group-hover:text-blue-600/40 transition-all duration-1000`}></i>
               </div>
-              <div className="p-12 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <span className="text-blue-600 text-xs font-black uppercase tracking-[0.2em] mb-2 block">{proj.type}</span>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tighter">{proj.name}</h3>
-                  </div>
-                  <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
-                    <i className="fa-solid fa-code-branch"></i>
-                  </div>
-                </div>
-                <p className="text-slate-600 font-medium text-lg leading-relaxed mb-10">{proj.desc}</p>
+              <div className="p-20 flex-1 flex flex-col">
+                <span className="text-blue-600 text-xs font-black uppercase tracking-[0.4em] mb-4 block">{proj.type}</span>
+                <h3 className="text-5xl font-black text-slate-900 tracking-tighter mb-8">{proj.name}</h3>
+                <p className="text-slate-600 font-medium text-2xl leading-relaxed mb-16">{proj.desc}</p>
                 <div className="mt-auto">
                   <a 
                     href={proj.url} 
                     target="_blank" 
-                    className="inline-flex items-center justify-center w-full md:w-auto bg-slate-900 hover:bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-2xl shadow-slate-200 hover:shadow-blue-100"
+                    className="inline-flex items-center justify-center w-full md:w-auto bg-slate-900 hover:bg-blue-600 text-white px-14 py-6 rounded-3xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-4xl shadow-slate-100 hover:shadow-blue-200"
                   >
-                    Visit Live Platform <i className="fa-solid fa-arrow-up-right-from-square ml-4 text-[10px]"></i>
+                    Launch Platform <i className="fa-solid fa-external-link ml-6 text-sm"></i>
                   </a>
                 </div>
               </div>
@@ -357,90 +384,44 @@ const App = () => {
         </div>
       </Section>
 
-      {/* Credentials */}
-      <Section id="education" title="Credentials" bg="bg-slate-50">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="bg-white p-12 rounded-[3rem] shadow-sm border border-slate-100 card-hover">
-            <h4 className="text-2xl font-black mb-12 flex items-center gap-5 text-slate-900 tracking-tight">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
-                <i className="fa-solid fa-graduation-cap"></i>
-              </div>
-              Education
-            </h4>
-            <div className="space-y-12">
-              <div className="relative pl-10 border-l-4 border-blue-50">
-                <h5 className="text-2xl font-black text-slate-900">MBA - Welingkar Institute</h5>
-                <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.2em] mt-3">Strategic Management | Mumbai, India</p>
-              </div>
-              <div className="relative pl-10 border-l-4 border-blue-50">
-                <h5 className="text-2xl font-black text-slate-900">B.E., Computer Engineering</h5>
-                <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.2em] mt-3">Engineering Foundations | Mumbai University</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white p-12 rounded-[3rem] shadow-sm border border-slate-100 card-hover">
-            <h4 className="text-2xl font-black mb-12 flex items-center gap-5 text-slate-900 tracking-tight">
-              <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-600">
-                <i className="fa-solid fa-award"></i>
-              </div>
-              Certifications
-            </h4>
-            <div className="space-y-6">
-              {[
-                "Scrum Alliance Certified Product Owner (CSPO)",
-                "Benchmark Six Sigma Green Belt Certified",
-                "CII - Supply Chain and Logistics Essentials"
-              ].map((cert, i) => (
-                <div key={i} className="flex items-center gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 group transition-all hover:bg-white hover:border-blue-200">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-green-500 shadow-sm group-hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-check text-sm"></i>
-                  </div>
-                  <span className="font-black text-sm tracking-tight">{cert}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Section>
-
       {/* Footer */}
-      <footer className="bg-slate-900 text-white pt-40 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 hero-pattern opacity-5"></div>
-        <div className="container mx-auto px-6 max-w-6xl relative z-10">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-20 border-b border-white/10 pb-32 mb-20">
-            <div className="max-w-2xl space-y-8">
-              <h2 className="text-5xl md:text-7xl font-black mb-10 leading-[0.9] tracking-tighter italic">
-                Let's Build the <span className="text-blue-500">Next Big</span> Thing Together.
+      <footer className="bg-slate-950 text-white pt-56 pb-28 relative overflow-hidden">
+        <div className="absolute inset-0 hero-pattern opacity-[0.05]"></div>
+        <div className="container mx-auto px-6 max-w-7xl relative z-10 text-center lg:text-left">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-32 border-b border-white/5 pb-48 mb-24">
+            <div className="max-w-4xl space-y-12">
+              <h2 className="text-7xl md:text-9xl font-black mb-12 leading-[0.85] tracking-tighter italic">
+                Let's <span className="text-blue-500">Design</span> the <br/>Future Together.
               </h2>
-              <p className="text-slate-400 text-2xl font-medium leading-relaxed">
-                Seeking ambitious teams where strategic product vision and technical depth are the standard.
+              <p className="text-slate-400 text-4xl font-medium leading-relaxed">
+                Open to strategic leadership and high-impact technical product opportunities.
               </p>
             </div>
-            <div className="flex flex-col gap-10 w-full lg:w-auto">
-              <a href="mailto:devbhuta@gmail.com" className="group flex items-center gap-8 bg-white/5 p-8 rounded-[2.5rem] hover:bg-white hover:text-slate-900 transition-all duration-700 border border-white/10 shadow-3xl">
-                <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center text-3xl group-hover:rotate-6 transition-all duration-500 shadow-2xl shadow-blue-900/50 group-hover:shadow-blue-200">
-                  <i className="fa-solid fa-envelope"></i>
+            <div className="flex flex-col gap-14 w-full lg:w-auto">
+              <a href="mailto:devbhuta@gmail.com" className="group flex items-center gap-12 bg-white/5 p-12 rounded-[4rem] hover:bg-white hover:text-slate-950 transition-all duration-700 border border-white/10 shadow-4xl">
+                <div className="w-28 h-28 bg-blue-600 rounded-[2.5rem] flex items-center justify-center text-5xl group-hover:rotate-12 transition-all duration-500 shadow-4xl shadow-blue-900/50 group-hover:shadow-blue-200">
+                  <i className="fa-solid fa-paper-plane"></i>
                 </div>
-                <div>
-                  <div className="text-[10px] text-slate-500 uppercase font-black tracking-[0.4em] mb-2">Direct Channel</div>
-                  <div className="text-2xl font-black tracking-tight">devbhuta@gmail.com</div>
+                <div className="text-left">
+                  <div className="text-[12px] text-slate-500 uppercase font-black tracking-[0.6em] mb-4">Direct Channel</div>
+                  <div className="text-3xl font-black tracking-tight">devbhuta@gmail.com</div>
                 </div>
               </a>
-              <div className="flex gap-8 justify-center lg:justify-start">
-                <a href="#" className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center hover:bg-blue-600 transition-all duration-500 text-3xl border border-white/10 hover:-translate-y-3">
+              <div className="flex gap-12 justify-center lg:justify-start">
+                <a href="https://linkedin.com" target="_blank" className="w-28 h-28 bg-white/5 rounded-[2.5rem] flex items-center justify-center hover:bg-blue-600 transition-all duration-500 text-5xl border border-white/10 hover:-translate-y-6">
                   <i className="fa-brands fa-linkedin-in"></i>
                 </a>
-                <a href="#" className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center hover:bg-blue-600 transition-all duration-500 text-3xl border border-white/10 hover:-translate-y-3">
+                <a href="#" className="w-28 h-28 bg-white/5 rounded-[2.5rem] flex items-center justify-center hover:bg-blue-600 transition-all duration-500 text-5xl border border-white/10 hover:-translate-y-6">
                   <i className="fa-brands fa-github"></i>
                 </a>
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-center text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] gap-12 text-center">
-            <p>&copy; 2024 Devang Bhuta. High-Impact Technical Product Leader.</p>
-            <div className="flex space-x-12">
+          <div className="flex flex-col md:flex-row justify-between items-center text-slate-500 text-[12px] font-black uppercase tracking-[0.7em] gap-20">
+            <p>&copy; 2024 Devang Bhuta. Product Leadership & Engineering Strategy.</p>
+            <div className="flex space-x-20">
               <a href="#about" className="hover:text-blue-400 transition-colors">Origins</a>
-              <a href="#experience" className="hover:text-blue-400 transition-colors">Journey</a>
+              <a href="#experience" className="hover:text-blue-400 transition-colors">Career</a>
               <a href="#projects" className="hover:text-blue-400 transition-colors">Labs</a>
             </div>
           </div>
