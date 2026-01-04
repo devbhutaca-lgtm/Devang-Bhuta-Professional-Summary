@@ -128,7 +128,7 @@ const App = () => {
       category: "Innovation",
       desc: "Revolutionizing product warranty management and lifecycle tracking through technical automation.",
       icon: "fa-shield-halved",
-      protoUrl: "https://github.com/devbhutaca-lgtm"
+      protoUrl: "https://devbhutaca-32528.bubbleapps.io/version-test"
     },
     {
       name: "My Personal Blackbox",
@@ -136,7 +136,7 @@ const App = () => {
       category: "Security",
       desc: "High-security personal data vault design focused on secure digital legacy and recovery protocols.",
       icon: "fa-vault",
-      protoUrl: "https://github.com/devbhutaca-lgtm"
+      protoUrl: "https://devbhutaca.bubbleapps.io/version-test/"
     },
     {
       name: "My Review Buddy",
@@ -144,7 +144,7 @@ const App = () => {
       category: "AI Productivity",
       desc: "AI-driven synthesis for professional reviews, helping leaders manage feedback at scale.",
       icon: "fa-comments",
-      protoUrl: "https://github.com/devbhutaca-lgtm"
+      protoUrl: "https://devbhutaca-78886.bubbleapps.io/version-test"
     }
   ];
 
