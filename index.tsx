@@ -36,7 +36,7 @@ const App = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const profileImage = "https://images.unsplash.com/photo-1519085185758-2ad9f1736580?q=80&w=1000&auto=format&fit=crop"; 
+  const profileImage = "https://photos.google.com/photo/AF1QipO2FjDR3ezOG-COjFOR1VWM_5IdlKL1w_sfauE8"; 
 
   const stats = [
     { label: "Revenue Generated", value: "$12M+" },
